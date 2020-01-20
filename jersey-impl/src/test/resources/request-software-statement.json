@@ -1,0 +1,25 @@
+{
+  "softwareName": "Nejlepší produkt",
+  "softwareNameEn": "Best product",
+  "softwareId": "f64bf2e447e545228c78e07b081a82ee",
+  "softwareVersion": "1.0",
+  "softwareUri": "https://client.example.org",
+  "redirectUris": [
+    "https://client.example.org/callback",
+    "https://client.example.org/callback-backup"
+  ],
+  "tokenEndpointAuthMethod": "client_secret_post",
+  "grantTypes": [
+    "authorization_code"
+  ],
+  "responseTypes": [
+    "code"
+  ],
+  "registrationBackUri": "https://client.example.org/backuri",
+  "contacts": [
+    "email: example@goodsoft.com"
+  ],
+  "logoUri": "https://client.example.org/logo.png",
+  "tosUri": "https://client.example.org/tos",
+  "policyUri": "https://client.example.org/policy"
+}

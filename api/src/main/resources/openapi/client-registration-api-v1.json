@@ -1,0 +1,300 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Client Registration",
+    "description": "KB API for client registration.",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.kb.cz/open/api/client-registration/v1"
+    },
+    {
+      "url": "https://api.kb.cz/open/api/client-registration/v1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "software-registration",
+      "description": "Operations for software statements."
+    }
+  ],
+  "paths": {
+    "/software-statements": {
+      "post": {
+        "tags": [
+          "software-registration"
+        ],
+        "summary": "API to register new software",
+        "operationId": "postSoftwareStatements",
+        "parameters": [
+          {
+            "name": "x-correlation-id",
+            "in": "header",
+            "description": "Correlation ID (GUID 128-bit: 8-4-4-4-12) is the generated unique identifier of the initial request, which stays the same through all the systems/application involved.",
+            "example": "324d4777-b59e-4ad3-bb16-527856460113",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            }
+          },
+          {
+            "name": "x-client-cert",
+            "in": "header",
+            "description": "Qualified certificate for digital signature. This header is automatically filled from TLS handshake.",
+            "schema": {
+              "type": "string",
+              "maxLength": 4096
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Data for new software statement.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SoftwareStatementRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "SoftwareStatement in form of JWT created.",
+            "content": {
+              "text/plain; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/SoftwareStatement"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request could not be understood by the server due to malformed syntax.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Syntax of the request is correct but the input is invalid. Please check input parameters.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-auth-type": "Application & Application User",
+        "x-throttling-tier": "Unlimited",
+        "security": [
+          {
+            "default": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "CorrelationId": {
+        "name": "x-correlation-id",
+        "in": "header",
+        "description": "Correlation ID (GUID 128-bit: 8-4-4-4-12) is the generated unique identifier of the initial request, which stays the same through all the systems/application involved.",
+        "example": "324d4777-b59e-4ad3-bb16-527856460113",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        }
+      },
+      "ClientCertificate": {
+        "name": "x-client-cert",
+        "in": "header",
+        "description": "Qualified certificate for digital signature. This header is automatically filled from TLS handshake.",
+        "schema": {
+          "type": "string",
+          "maxLength": 4096
+        }
+      }
+    },
+    "schemas": {
+      "SoftwareStatementRequest": {
+        "required": [
+          "redirectUris",
+          "registrationBackUri",
+          "softwareId",
+          "softwareName",
+          "softwareVersion"
+        ],
+        "type": "object",
+        "description": "Software statement request data.",
+        "properties": {
+          "softwareName": {
+            "maxLength": 50,
+            "minLength": 5,
+            "type": "string",
+            "description": "Software Name - CZ.",
+            "example": "Nejlepší produkt"
+          },
+          "softwareNameEn": {
+            "maxLength": 50,
+            "minLength": 5,
+            "type": "string",
+            "description": "Software Name - EN.",
+            "example": "Best product"
+          },
+          "softwareId": {
+            "maxLength": 64,
+            "type": "string",
+            "description": "Software identification code.",
+            "example": "f64bf2e447e545228c78e07b081a82ee"
+          },
+          "softwareVersion": {
+            "maxLength": 30,
+            "minLength": 1,
+            "type": "string",
+            "description": "Software version.",
+            "example": "1.0"
+          },
+          "softwareUri": {
+            "type": "string",
+            "description": "Software URL.",
+            "format": "uri",
+            "example": "https://client.example.org"
+          },
+          "redirectUris": {
+            "type": "array",
+            "description": "Array of redirection URI strings for use in redirect-based flows such as the authorization code.",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
+            "example": [
+              "https://client.example.org/callback",
+              "https://client.example.org/callback-backup"
+            ]
+          },
+          "tokenEndpointAuthMethod": {
+            "type": "string",
+            "description": "String indicator of the requested authentication method for the token endpoint.",
+            "enum": [
+              "client_secret_post"
+            ],
+            "example": "client_secret_post"
+          },
+          "grantTypes": {
+            "type": "array",
+            "description": "Array of OAuth 2.0 grant type strings that the client can use.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "authorization_code"
+              ]
+            },
+            "example": [
+              "authorization_code"
+            ]
+          },
+          "responseTypes": {
+            "type": "array",
+            "description": "Array of the OAuth 2.0 response type strings that the client can use at the authorization endpoint.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "code"
+              ]
+            },
+            "example": [
+              "code"
+            ]
+          },
+          "registrationBackUri": {
+            "type": "string",
+            "description": "URI string representing the endpoint where registration data is sent.",
+            "format": "uri",
+            "example": "https://client.example.org/backuri"
+          },
+          "contacts": {
+            "type": "array",
+            "description": "Array of strings representing ways to contact people responsible for this client, typically email addresses.",
+            "items": {
+              "maxLength": 50,
+              "type": "string"
+            },
+            "example": [
+              "email: example@goodsoft.com"
+            ]
+          },
+          "logoUri": {
+            "type": "string",
+            "description": "URL string that references a logo for the client.",
+            "format": "uri",
+            "example": "https://client.example.org/logo.png"
+          },
+          "tosUri": {
+            "type": "string",
+            "description": "URL string that points to a human-readable terms of service document for the client that describes a contractual relationship between the end-user and the client that the end-user accepts when authorizing the client.",
+            "format": "uri",
+            "example": "https://client.example.org/tos"
+          },
+          "policyUri": {
+            "type": "string",
+            "description": "URL string that points to a human-readable privacy policy document that describes how the deployment organization collects, uses, retains, and discloses personal data.",
+            "format": "uri",
+            "example": "https://client.example.org/policy"
+          }
+        }
+      },
+      "SoftwareStatement": {
+        "type": "string",
+        "description": "A digitally signed or MACed JSON Web Token (JWT) [RFC7519] that asserts metadata values about the client software.",
+        "example": "ew0KICAidmVuZG9yTmFtZSI6ICJEb2Jyw70gU29mdHdhcmUgcy5yLm8uIiwNCiAgInNvZnR3YXJlTmFtZSI6ICJOZWpsZXDFocOtIFByb2R1a3QiLA0KICAic29mdHdhcmVJZCI6ICJmNjRiZjJlNDQ3ZTU0NTIyOGM3OGUwN2IwODFhODJlZSIsDQogICJzb2Z0d2FyZVZlcnNpb24iOiAiMS4wIiwNCiAgInNvZnR3YXJlVXJpIjogImh0dHBzOi8vY2xpZW50LmV4YW1wbGUub3JnIiwNCiAgInJlZGlyZWN0VXJpcyI6IFsNCiAgICAiaHR0cHM6Ly9jbGllbnQuZXhhbXBsZS5vcmcvY2FsbGJhY2siLA0KICAgICJodHRwczovL2NsaWVudC5leGFtcGxlLm9yZy9jYWxsYmFjazIiDQogIF0sDQogICJ0b2tlbkVuZHBvaW50QXV0aE1ldGhvZCI6ICJub25lIiwNCiAgImdyYW50VHlwZXMiOiBbDQogICAgImF1dGhvcml6YXRpb25fY29kZSIsDQogICAgImltcGxpY2l0Ig0KICBdLA0KICAicmVzcG9uc2VUeXBlcyI6IFsNCiAgICAiY29kZSIsDQogICAgInRva2VuIg0KICBdLA0KICAicmVnaXN0cmF0aW9uQmFja1VyaSI6ICIiLA0KICAiY29udGFjdHMiOiBbDQogICAgInBob25lOiA2MDUxMjM0NTYiLA0KICAgICJlbWFpbDogZXhhbXBsZUBnb29kc29mdC5jb20iDQogIF0sDQogICJsb2dvVXJpIjogImh0dHBzOi8vY2xpZW50LmV4YW1wbGUub3JnL2xvZ28ucG5nIiwNCiAgInRvc1VyaSI6ICJodHRwczovL2NsaWVudC5leGFtcGxlLm9yZy90b3MiLA0KICAicG9saWN5VXJpIjogImh0dHBzOi8vY2xpZW50LmV4YW1wbGUub3JnL3BvbGljeSINCn0"
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "errorCode": {
+            "type": "string",
+            "description": "Error code."
+          },
+          "scope": {
+            "type": "string",
+            "description": "Field where error occured."
+          },
+          "description": {
+            "type": "string",
+            "description": "Error details."
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        },
+        "description": "Collection of errors defined by individual elements."
+      }
+    },
+    "securitySchemes": {
+      "default": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Access Token that is generated in Api Manager"
+      }
+    }
+  }
+}
