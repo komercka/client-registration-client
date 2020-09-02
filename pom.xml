@@ -36,6 +36,14 @@
         <tag>v@{project.version}</tag>
     </scm>
 
+    <distributionManagement>
+        <repository>
+            <id>github-client-registration-client</id>
+            <name>Repository to download ClientRegistration API SDK</name>
+            <url>https://maven.pkg.github.com/komercka/client-registration-client</url>
+        </repository>
+    </distributionManagement>
+
     <dependencyManagement>
         <dependencies>
             <!--INTERNAL-->
